@@ -150,3 +150,6 @@ media/
 
 sent_emails/
 
+.flake8
+
+db.json
