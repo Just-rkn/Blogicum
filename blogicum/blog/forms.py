@@ -9,6 +9,8 @@ User = get_user_model()
 
 
 class PostForm(forms.ModelForm):
+    """Form of model Post."""
+
     class Meta:
         model = Post
         fields = (
@@ -21,12 +23,16 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    """Form of model Comment."""
+
     class Meta:
         model = Comment
         fields = ('text',)
 
 
 class UserUpdateForm(UserChangeForm):
+    """Modified form of UserChangeForm."""
+
     password = None
 
     class Meta:
