@@ -4,10 +4,18 @@ from django.utils import timezone
 
 import datetime as dt
 
+from blog.utils import get_short_string
+
 
 User = get_user_model()
 
-MAX_WORDS_PER_STR = 3
+MAX_WORDS_FOR_TITLE = 3
+
+MAX_WORDS_FOR_NAME = 2
+
+MAX_WORDS_FOR_TEXT = 5
+
+MAX_WORDS_FOR_DESCRIPTION = 4
 
 
 class PostManager(models.Manager):
@@ -69,10 +77,13 @@ class Category(CreatedAtModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        title_words = self.title.split()
-        if len(title_words) > MAX_WORDS_PER_STR:
-            return f'({self.id}) {" ".join(title_words[:MAX_WORDS_PER_STR])}'
-        return f'({self.id}) {self.title}'
+        short_title = get_short_string(
+            self.title, max_words=MAX_WORDS_FOR_TITLE
+        )
+        short_description = get_short_string(
+            self.description, max_words=MAX_WORDS_FOR_DESCRIPTION
+        )
+        return f'{short_title}, {self.slug}, {short_description}'
 
 
 class Location(CreatedAtModel):
@@ -88,10 +99,10 @@ class Location(CreatedAtModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        name_words = self.name.split()
-        if len(name_words) > MAX_WORDS_PER_STR:
-            return f'({self.id}) {" ".join(name_words[:MAX_WORDS_PER_STR])}'
-        return f'({self.id}) {self.name}'
+        return get_short_string(
+            self.name,
+            max_words=MAX_WORDS_FOR_NAME
+        )
 
 
 class Post(CreatedAtModel):
@@ -143,10 +154,13 @@ class Post(CreatedAtModel):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        title_words = self.title.split()
-        if len(title_words) > MAX_WORDS_PER_STR:
-            return f'({self.id}) {" ".join(title_words[:MAX_WORDS_PER_STR])}'
-        return f'({self.id}) {self.title}'
+        short_title = get_short_string(
+            self.title, max_words=MAX_WORDS_FOR_TITLE
+        )
+        short_text = get_short_string(
+            self.text, max_words=MAX_WORDS_FOR_TEXT
+        )
+        return f'{short_title}, {short_text}'
 
 
 class Comment(models.Model):
@@ -172,7 +186,7 @@ class Comment(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        text_words = self.text.split()
-        if len(text_words) > MAX_WORDS_PER_STR:
-            return f'({self.id}) {" ".join(text_words[:MAX_WORDS_PER_STR])}'
-        return f'({self.id}) {self.text}'
+        return get_short_string(
+            self.text,
+            max_words=MAX_WORDS_FOR_TEXT
+        )
