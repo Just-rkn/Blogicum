@@ -164,17 +164,24 @@ class ProfileListView(PaginateMixin, ListView):
 
     def get_queryset(self):
         """
-        Returns the QuerySet of the correct author,
+        Returns the published QuerySet of the correct author,
+        if request user is not equal to author,
+        if request user is equal to author, returns all posts of the author,
         if there is no correct author,
         raise 404 error.
         """
 
         author = get_object_or_404(User, username=self.kwargs['username'])
-        queryset = Post.objects.select_related(
-            'author', 'category', 'location'
-        ).filter(
-            author=author
-        )
+        if self.request.user == author:
+            queryset = Post.objects.select_related(
+                'author', 'category', 'location'
+            ).filter(
+                author=author
+            )
+        else:
+            queryset = Post.objects.get_published().filter(
+                author=author
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
